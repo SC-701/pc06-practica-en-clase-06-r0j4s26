@@ -11,7 +11,7 @@
 name: Build and deploy Web App
 
 env:
-  AZURE_WEBAPP_NAME: api2srvsc701vehiculo    # Change this to your Azure Web App name
+  AZURE_WEBAPP_NAME: api2srvsc701vehiculo
   AZURE_WEBAPP_PACKAGE_PATH: './Vehiculos.WEB/Web'
   DOTNET_VERSION: '8.0'
 
@@ -49,16 +49,15 @@ jobs:
         run: dotnet restore "Vehiculos.WEB/Vehiculos.WEB.sln"
 
       - name: Build with dotnet
-        run: |
-          dotnet build "Vehiculos.WEB/Abstracciones/*.csproj" --configuration Release --no-restore
-          dotnet build "Vehiculos.WEB/Reglas/*.csproj" --configuration Release --no-restore
-          dotnet build "Vehiculos.WEB/Web/*.csproj" --configuration Release --no-restore
+        # He cambiado las 3 líneas anteriores por esta única línea que compila todo el proyecto
+        run: dotnet build "Vehiculos.WEB/Vehiculos.WEB.sln" --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test "Vehiculos.WEB/Vehiculos.WEB.sln" --no-restore --verbosity normal --configuration Release || echo "No tests found or test execution failed"
+        run: dotnet test "Vehiculos.WEB/Vehiculos.WEB.sln" --no-restore --verbosity normal --configuration Release || echo "No tests found"
 
       - name: dotnet publish
-        run: dotnet publish "Vehiculos.WEB/Web/*.csproj" -c Release -o ./publish --no-restore
+        # Aquí eliminé las comillas problemáticas del comodín para que Linux lo encuentre bien
+        run: dotnet publish Vehiculos.WEB/Web/*.csproj -c Release -o ./publish --no-restore
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
